@@ -1,10 +1,17 @@
-This repository includes an example plugin, `demo`, for you to use as a reference for developing your own plugins.
-
-[![Build Status](https://github.com/traefik/plugindemo/workflows/Main/badge.svg?branch=master)](https://github.com/traefik/plugindemo/actions)
+[![Build Status](https://github.com/joinrepublic/traefik-csp-middleware/workflows/Main/badge.svg?branch=master)](https://github.com/joinrepublic/traefik-csp-middleware/actions)
 
 The existing plugins can be browsed into the [Plugin Catalog](https://plugins.traefik.io).
 
-# Developing a Traefik plugin
+# Content-Security-Policy Middleware for Traefik
+
+This is a content-security-policy for Traefik. It works similar to [CloudFlare CSP worker](https://github.com/moveyourdigital/cloudflare-worker-csp-nonce):
+
+* It scans server responses
+* If the response contains `content-security-policy` or `content-security-policy-report-only` headers, it modifies the response
+* If header contains the hard-coded value like (e.g. `DhcnhD3khTMePgXw`), it generates a new value and replaces the old value with the new one
+* The same happens to the response body: if it contains the placeholder value, it'll get replaced
+
+## Developing a Traefik plugin
 
 [Traefik](https://traefik.io) plugins are developed using the [Go language](https://golang.org).
 
@@ -39,7 +46,7 @@ The following declaration (given here in YAML) defines a plugin:
 experimental:
   plugins:
     example:
-      moduleName: github.com/traefik/plugindemo
+      moduleName: github.com/joinrepublic/traefik-csp-middleware
       version: v0.2.1
 ```
 
@@ -101,10 +108,10 @@ The source code of the plugin should be organized as follows:
 experimental:
   localPlugins:
     example:
-      moduleName: github.com/traefik/plugindemo
+      moduleName: github.com/joinrepublic/traefik-csp-middleware
 ```
 
-(In the above example, the `plugindemo` plugin will be loaded from the path `./plugins-local/src/github.com/traefik/plugindemo`.)
+(In the above example, the `plugindemo` plugin will be loaded from the path `./plugins-local/src/github.com/joinrepublic/traefik-csp-middleware`.)
 
 ```yaml
 # Dynamic configuration
