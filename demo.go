@@ -2,7 +2,7 @@
 package plugindemo
 
 import (
-	"bytes"
+	// "bytes"
 	"context"
 	"fmt"
 	"net/http"
@@ -11,32 +11,32 @@ import (
 
 // Config the plugin configuration.
 type Config struct {
-	Headers map[string]string `json:"headers,omitempty"`
+	Placeholder string `json:"headers,omitempty"`
 }
 
 // CreateConfig creates the default plugin configuration.
 func CreateConfig() *Config {
 	return &Config{
-		Headers: make(map[string]string),
+		Placeholder: "DhcnhD3khTMePgXw",
 	}
 }
 
 // Demo a Demo plugin.
 type Demo struct {
-	next     http.Handler
-	headers  map[string]string
-	name     string
-	template *template.Template
+	next         http.Handler
+	placeholder  string
+	name         string
+	template     *template.Template
 }
 
 // New created a new Demo plugin.
 func New(ctx context.Context, next http.Handler, config *Config, name string) (http.Handler, error) {
-	if len(config.Headers) == 0 {
+	if len(config.Placeholder) == 0 {
 		return nil, fmt.Errorf("headers cannot be empty")
 	}
 
 	return &Demo{
-		headers:  config.Headers,
+		placeholder:  config.Placeholder,
 		next:     next,
 		name:     name,
 		template: template.New("demo").Delims("[[", "]]"),
@@ -44,23 +44,23 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 }
 
 func (a *Demo) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	for key, value := range a.headers {
-		tmpl, err := a.template.Parse(value)
-		if err != nil {
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	// for key, value := range a.headers {
+	// 	tmpl, err := a.template.Parse(value)
+	// 	if err != nil {
+	// 		http.Error(rw, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
 
-		writer := &bytes.Buffer{}
+	// 	writer := &bytes.Buffer{}
 
-		err = tmpl.Execute(writer, req)
-		if err != nil {
-			http.Error(rw, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	// 	err = tmpl.Execute(writer, req)
+	// 	if err != nil {
+	// 		http.Error(rw, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
 
-		req.Header.Set(key, writer.String())
-	}
+	// 	req.Header.Set(key, writer.String())
+	// }
 
 	a.next.ServeHTTP(rw, req)
 }
