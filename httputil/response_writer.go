@@ -7,10 +7,11 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"regexp"
 	"strings"
 
-	"github.com/packruler/rewrite-body/compressutil"
-	"github.com/packruler/rewrite-body/logger"
+	"github.com/joinrepublic/traefik-rewrite-body-csp/compressutil"
+	"github.com/joinrepublic/traefik-rewrite-body-csp/logger"
 )
 
 // ResponseWrapper a wrapper used to simplify ResponseWriter data access and manipulation.
@@ -24,6 +25,9 @@ type ResponseWrapper struct {
 	logWriter  logger.LogWriter
 	monitoring MonitoringConfig
 
+	cspPlaceholder *regexp.Regexp
+	generateNonce  func() []byte
+
 	http.ResponseWriter
 }
 
@@ -33,6 +37,8 @@ func WrapWriter(
 	monitoringConfig MonitoringConfig,
 	logWriter logger.LogWriter,
 	lastModified bool,
+	cspPlaceholder *regexp.Regexp,
+	generateNonce func() []byte,
 ) *ResponseWrapper {
 	return &ResponseWrapper{
 		buffer:         bytes.Buffer{},
@@ -42,6 +48,41 @@ func WrapWriter(
 		logWriter:      logWriter,
 		monitoring:     monitoringConfig,
 		ResponseWriter: responseWriter,
+		cspPlaceholder: cspPlaceholder,
+		generateNonce:  generateNonce,
+	}
+}
+
+// ContainsCSP tells whether or not current response contains CSP related headers
+func (wrapper *ResponseWrapper) ContainsCSP() bool {
+	csp := wrapper.GetHeader("content-security-policy")
+	cspReportOnly := wrapper.GetHeader("content-security-policy-report-only")
+
+	return csp != "" || cspReportOnly != ""
+}
+
+func (wrapper *ResponseWrapper) overrideCSPHeaders() {
+	csp := wrapper.GetHeader("content-security-policy")
+	cspReportOnly := wrapper.GetHeader("content-security-policy-report-only")
+
+	replacement := wrapper.generateNonce()
+
+	wrapper.setHeader("csp-nonce-value", string(replacement))
+
+	if csp != "" {
+		wrapper.Header().Del("content-security-policy")
+		wrapper.setHeader(
+			"content-security-policy",
+			string(wrapper.cspPlaceholder.ReplaceAll([]byte(csp), replacement)),
+		)
+	}
+
+	if cspReportOnly != "" {
+		wrapper.Header().Del("content-security-policy-report-only")
+		wrapper.setHeader(
+			"content-security-policy-report-only",
+			string(wrapper.cspPlaceholder.ReplaceAll([]byte(cspReportOnly), replacement)),
+		)
 	}
 }
 
@@ -49,6 +90,10 @@ func WrapWriter(
 func (wrapper *ResponseWrapper) WriteHeader(statusCode int) {
 	if wrapper.wroteHeader {
 		return
+	}
+
+	if wrapper.ContainsCSP() {
+		wrapper.overrideCSPHeaders()
 	}
 
 	if !wrapper.lastModified {
@@ -101,8 +146,14 @@ func (wrapper *ResponseWrapper) SetContent(data []byte, encoding string) {
 	}
 }
 
-func (wrapper *ResponseWrapper) getHeader(headerName string) string {
+// GetHeader returs header value.
+func (wrapper *ResponseWrapper) GetHeader(headerName string) string {
 	return wrapper.ResponseWriter.Header().Get(headerName)
+}
+
+// Override header value.
+func (wrapper *ResponseWrapper) setHeader(headerName string, newValue string) {
+	wrapper.ResponseWriter.Header().Set(headerName, newValue)
 }
 
 // LogHeaders writes current response headers.
@@ -112,12 +163,12 @@ func (wrapper *ResponseWrapper) LogHeaders() {
 
 // getContentEncoding get the Content-Encoding header value.
 func (wrapper *ResponseWrapper) getContentEncoding() string {
-	return wrapper.getHeader("Content-Encoding")
+	return wrapper.GetHeader("Content-Encoding")
 }
 
 // getContentType get the Content-Encoding header value.
 func (wrapper *ResponseWrapper) getContentType() string {
-	return wrapper.getHeader("Content-Type")
+	return wrapper.GetHeader("Content-Type")
 }
 
 // SupportsProcessing determine if HttpWrapper is supported by this plugin based on encoding.
