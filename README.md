@@ -41,7 +41,7 @@ pilot:
 
 experimental:
     plugins:
-        rewrite-body:
+        rewrite-body-csp:
             moduleName: "github.com/joinrepublic/traefik-rewrite-body-csp"
             version: "v1.1.0"
 ```
@@ -66,15 +66,12 @@ http:
   middlewares:
     rewrite-foo:
       plugin:
-        rewrite-body:
+        rewrite-body-csp:
           # Keep Last-Modified header returned by the HTTP service.
           # By default, the Last-Modified header is removed.
           lastModified: true
 
-          # Rewrites all "foo" occurences by "bar"
-          rewrites:
-            - regex: "foo"
-              replacement: "bar"
+          placeholder: DhcnhD3khTMePgXw
 
           # logLevel is optional, defaults to Info level.
           # Available logLevels: (Trace: -2, Debug: -1, Info: 0, Warning: 1, Error: 2)
@@ -98,33 +95,4 @@ http:
         servers:
           - url: "http://127.0.0.1"
 ```
-
-## Example theme.park
-
-### Dynamic
-
-```yaml
-http:
-  routers:
-    sonarr-router:
-      rule: "Host(`sonarr.example.com`)"
-      middlewares: 
-        - sonarr-theme
-      service: sonarr-service
-
-  middlewares:
-    sonarr-theme:
-      plugin:
-        rewrite-body:
-          rewrites:
-            - regex: </head>
-              replacement: <link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/sonarr/{{ env "THEME" }}.css"></head>
-
-  services:
-    sonarr-service:
-      servers:
-        - url: http://localhost:8989
-```
-
-You can set an environment variable `THEME` to the name of a theme for easier consistency across apps.
 

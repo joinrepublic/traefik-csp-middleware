@@ -1,16 +1,14 @@
-displayName: Rewrite Body (with compression support)
+displayName: Rewrite Body with CSP (with compression support)
 
 summary: Built on top of Traefik Rewrite Body plugin to also support gzip decompress -> update -> recompress.
 
 type: middleware
 
-import: github.com/packruler/rewrite-body
+import: github.com/joinrepublic/traefik-rewrite-body-csp
 
 testData:
   lastModified: true
-  rewrites:
-    - regex: "bar"
-      replacement: "foo"
+  placeholder: DhcnhD3khTMePgXw
   monitor:
     types:
       - text/html
