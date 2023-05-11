@@ -43,7 +43,7 @@ experimental:
     plugins:
         rewrite-body-csp:
             moduleName: "github.com/joinrepublic/traefik-rewrite-body-csp"
-            version: "v1.1.0"
+            version: "v2.0.0"
 ```
 
 ### Dynamic
