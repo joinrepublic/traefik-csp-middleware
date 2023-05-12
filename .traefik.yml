@@ -1,6 +1,6 @@
 displayName: Rewrite Body with CSP (with compression support)
 
-summary: Built on top of Traefik Rewrite Body plugin to also support gzip decompress -> update -> recompress.
+summary: A fork of Rewrite Body w/ compression support to post-process static pages and add nonces to them
 
 type: middleware
 
