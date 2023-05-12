@@ -12,7 +12,7 @@ type nonceGenerator func() []byte
 type Config struct {
 	LastModified   bool   `json:"lastModified" toml:"lastModified" yaml:"lastModified"`
 	Placeholder    string `json:"placeholder" toml:"placeholder" yaml:"placeholder" default:"DhcnhD3khTMePgXw"`
-	NonceGenerator nonceGenerator
+	NonceGenerator nonceGenerator            `json:"-" toml:"-" yaml:"-"`
 	LogLevel       int8                      `json:"logLevel" toml:"logLevel" yaml:"logLevel"`
 	Monitoring     httputil.MonitoringConfig `json:"monitoring" toml:"monitoring" yaml:"monitoring"`
 }
