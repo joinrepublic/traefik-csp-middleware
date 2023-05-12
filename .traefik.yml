@@ -9,7 +9,6 @@ import: github.com/joinrepublic/traefik-rewrite-body-csp
 testData:
   lastModified: true
   placeholder: DhcnhD3khTMePgXw
-  logLevel: 0
   monitor:
     types:
       - text/html
