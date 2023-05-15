@@ -4,7 +4,7 @@ summary: A fork of Rewrite Body w/ compression support to post-process static pa
 
 type: middleware
 
-import: github.com/joinrepublic/traefik-rewrite-body-csp
+import: github.com/joinrepublic/traefik-csp-middleware
 
 testData:
   lastModified: true
