@@ -53,7 +53,7 @@ func WrapWriter(
 	}
 }
 
-// ContainsCSP tells whether or not current response contains CSP related headers
+// ContainsCSP tells whether or not current response contains CSP related headers.
 func (wrapper *ResponseWrapper) ContainsCSP() bool {
 	csp := wrapper.GetHeader("content-security-policy")
 	cspReportOnly := wrapper.GetHeader("content-security-policy-report-only")

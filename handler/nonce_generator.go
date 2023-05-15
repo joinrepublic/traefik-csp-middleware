@@ -8,6 +8,7 @@ import (
 
 func generateRandomString(length int) []byte {
 	const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+
 	ret := make([]byte, length)
 
 	for idx := 0; idx < length; idx++ {
@@ -28,6 +29,7 @@ func generateNonceString(length int) string {
 	return base64.URLEncoding.EncodeToString(randomValue)
 }
 
+//nolint:gomnd
 func defaultNonceGenerator() []byte {
 	return []byte(generateNonceString(40))
 }
