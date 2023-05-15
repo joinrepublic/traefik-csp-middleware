@@ -1,4 +1,4 @@
-package rewrite_body
+package traefik_csp_middleware
 
 import (
 	"bytes"
