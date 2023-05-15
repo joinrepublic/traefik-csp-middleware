@@ -1,4 +1,4 @@
-// Package rewrite_body a plugin to rewrite response body.
+// Package traefik_csp_middleware a plugin to rewrite response body.
 package traefik_csp_middleware
 
 import (
