@@ -1,13 +1,7 @@
-# Rewrite Body
+# Content Security Policy rewrite for Traefik
 
-This is a fork of [Traefik](https://github.com/traefik)'s [plugin-rewritebody](https://github.com/traefik/plugin-rewritebody)
-that is aimed at extending support to handle `gzip` content. This was initially aimed at extending the support for utilizing
-[theme.park](https://github.com/traefik/plugin-rewritebody)'s themes but can likely be used for a range of other uses.
+This is a fork of [Rewrite Body with compression](https://github.com/packruler/rewrite-body) middleware. Instead of rewriting random sequence of strings, it looks for a specific substring in Content Security Policy. It works similar to [CloudFlare Worker for CSP nonces](https://github.com/moveyourdigital/cloudflare-worker-csp-nonce) and is designed to be compatible.
 
-## Changes From Original Traefik Plugin
-
-The primary change is to add support for `gzip` content. This brought another potential issue to mind, what about really large
-content? This was handled as well.
 
 ### Process For Handling Body Content
 
