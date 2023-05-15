@@ -42,7 +42,7 @@ pilot:
 experimental:
     plugins:
         rewrite-body-csp:
-            moduleName: "github.com/joinrepublic/traefik-rewrite-body-csp"
+            moduleName: "github.com/joinrepublic/traefik-csp-middleware"
             version: "v2.0.0"
 ```
 

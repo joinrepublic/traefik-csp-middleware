@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/joinrepublic/traefik-rewrite-body-csp/httputil"
-	"github.com/joinrepublic/traefik-rewrite-body-csp/logger"
+	"github.com/joinrepublic/traefik-csp-middleware/httputil"
+	"github.com/joinrepublic/traefik-csp-middleware/logger"
 )
 
 type rewriteBody struct {
