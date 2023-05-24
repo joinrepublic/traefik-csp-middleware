@@ -115,10 +115,16 @@ func (bodyRewrite *rewriteBody) ServeHTTP(response http.ResponseWriter, req *htt
 
 	nonce := wrappedWriter.GetHeader("csp-nonce-value")
 
-	if len(bodyBytes) == 0 || len(nonce) == 0 {
+	if len(bodyBytes) == 0 {
 		// If the body is empty there is no purpose in continuing this process.
 		return
 	}
+
+        if len(nonce) == 0 {
+                encoding := wrappedWriter.Header().Get("Content-Encoding")
+                wrappedWriter.SetContent(bodyBytes, encoding)
+                return
+        }
 
 	bodyRewrite.logger.LogDebugf("Taking nonce value from header: %v", nonce)
 
