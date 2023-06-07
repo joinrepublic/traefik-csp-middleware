@@ -61,6 +61,11 @@ func (wrapper *ResponseWrapper) ContainsCSP() bool {
 	return csp != "" || cspReportOnly != ""
 }
 
+func (wrapper *ResponseWrapper) removeCSPHeaders() {
+	wrapper.Header().Del("content-security-policy")
+	wrapper.Header().Del("content-security-policy-report-only")
+}
+
 func (wrapper *ResponseWrapper) overrideCSPHeaders() {
 	csp := wrapper.GetHeader("content-security-policy")
 	cspReportOnly := wrapper.GetHeader("content-security-policy-report-only")
@@ -93,7 +98,11 @@ func (wrapper *ResponseWrapper) WriteHeader(statusCode int) {
 	}
 
 	if wrapper.ContainsCSP() {
-		wrapper.overrideCSPHeaders()
+		if statusCode == http.StatusNotModified {
+			wrapper.removeCSPHeaders()
+		} else {
+			wrapper.overrideCSPHeaders()
+		}
 	}
 
 	if !wrapper.lastModified {

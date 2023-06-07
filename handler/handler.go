@@ -120,11 +120,11 @@ func (bodyRewrite *rewriteBody) ServeHTTP(response http.ResponseWriter, req *htt
 		return
 	}
 
-        if len(nonce) == 0 {
-                encoding := wrappedWriter.Header().Get("Content-Encoding")
-                wrappedWriter.SetContent(bodyBytes, encoding)
-                return
-        }
+	if len(nonce) == 0 {
+		encoding := wrappedWriter.Header().Get("Content-Encoding")
+		wrappedWriter.SetContent(bodyBytes, encoding)
+		return
+	}
 
 	bodyRewrite.logger.LogDebugf("Taking nonce value from header: %v", nonce)
 

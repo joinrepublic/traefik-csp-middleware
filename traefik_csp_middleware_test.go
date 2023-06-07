@@ -26,6 +26,7 @@ func TestServeHTTP(t *testing.T) {
 		expLastModified bool
 		headers         map[string]string
 		expHeaders      map[string]string
+		responseStatus  int `default:200`
 	}{
 		{
 			desc:        "should replace foo by bar",
@@ -46,6 +47,28 @@ func TestServeHTTP(t *testing.T) {
 				"content-security-policy-report-only": "script-src 'strict-dynamic' 'nonce-bar'",
 				"baz":                                 "script-src 'nonce-foo'", // control group
 			},
+			responseStatus: http.StatusOK,
+		},
+		{
+			desc:        "Should drop CSP headers and not modify the body",
+			placeholder: "foo",
+			nonceGenerator: func() []byte {
+				return []byte("bar")
+			},
+			contentType: "text/html",
+			resBody:     "foo is the new bar",
+			expResBody:  "foo is the new bar",
+			headers: map[string]string{
+				"content-security-policy":             "script-src 'nonce-foo'",
+				"content-security-policy-report-only": "script-src 'strict-dynamic' 'nonce-foo'",
+				"baz":                                 "script-src 'nonce-foo'",
+			},
+			expHeaders: map[string]string{
+				"content-security-policy":             "",
+				"content-security-policy-report-only": "",
+				"baz":                                 "script-src 'nonce-foo'", // control group
+			},
+			responseStatus: http.StatusNotModified,
 		},
 		{
 			desc:        "should not replace anything if content encoding is not identity or empty",
@@ -60,6 +83,7 @@ func TestServeHTTP(t *testing.T) {
 			headers: map[string]string{
 				"content-security-policy": "script-src 'nonce-foo'",
 			},
+			responseStatus: http.StatusOK,
 		},
 		{
 			desc:        "should not replace anything if content type does not contain text or is not empty",
@@ -73,6 +97,7 @@ func TestServeHTTP(t *testing.T) {
 			headers: map[string]string{
 				"content-security-policy": "script-src 'nonce-foo'",
 			},
+			responseStatus: http.StatusOK,
 		},
 		{
 			desc:        "should replace foo by bar if content encoding is identity",
@@ -87,6 +112,7 @@ func TestServeHTTP(t *testing.T) {
 			headers: map[string]string{
 				"content-security-policy": "script-src 'nonce-foo'",
 			},
+			responseStatus: http.StatusOK,
 		},
 		{
 			desc:        "should not remove the last modified header",
@@ -103,6 +129,7 @@ func TestServeHTTP(t *testing.T) {
 			headers: map[string]string{
 				"content-security-policy": "script-src 'nonce-foo'",
 			},
+			responseStatus: http.StatusOK,
 		},
 		{
 			desc:        "should support gzip encoding",
@@ -119,6 +146,7 @@ func TestServeHTTP(t *testing.T) {
 			headers: map[string]string{
 				"content-security-policy": "script-src 'nonce-foo'",
 			},
+			responseStatus: http.StatusOK,
 		},
 		{
 			desc:        "should support deflate encoding",
@@ -135,6 +163,7 @@ func TestServeHTTP(t *testing.T) {
 			headers: map[string]string{
 				"content-security-policy": "script-src 'nonce-foo'",
 			},
+			responseStatus: http.StatusOK,
 		},
 		{
 			desc:        "should ignore unsupported encoding",
@@ -151,6 +180,7 @@ func TestServeHTTP(t *testing.T) {
 			headers: map[string]string{
 				"content-security-policy": "script-src 'nonce-foo'",
 			},
+			responseStatus: http.StatusOK,
 		},
 	}
 
@@ -172,7 +202,7 @@ func TestServeHTTP(t *testing.T) {
 					responseWriter.Header().Set(headerName, value)
 				}
 
-				responseWriter.WriteHeader(http.StatusOK)
+				responseWriter.WriteHeader(test.responseStatus)
 
 				_, _ = fmt.Fprintf(responseWriter, test.resBody)
 			}
