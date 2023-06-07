@@ -26,7 +26,7 @@ func TestServeHTTP(t *testing.T) {
 		expLastModified bool
 		headers         map[string]string
 		expHeaders      map[string]string
-		responseStatus  int `default:200`
+		responseStatus  int
 	}{
 		{
 			desc:        "should replace foo by bar",

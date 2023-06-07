@@ -123,6 +123,7 @@ func (bodyRewrite *rewriteBody) ServeHTTP(response http.ResponseWriter, req *htt
 	if len(nonce) == 0 {
 		encoding := wrappedWriter.Header().Get("Content-Encoding")
 		wrappedWriter.SetContent(bodyBytes, encoding)
+
 		return
 	}
 
